@@ -1,7 +1,6 @@
 const express = require('express');
-const Model = require('../models/sensor');
-const db = require("../models/sensorDb");
-const Sensor = db.Mongoose.model('sensor', db.SensorSchema, 'sensor');
+const db = require("../models/equipamento");
+const ModelEquipamento = db.Mongoose.model('equipamento', db.EquipamentoSchema, 'equipamento');
 const router = express.Router();
 
 //Post Method
@@ -34,7 +33,7 @@ router.get('/getAll', async (req, res) => {
 //Get all Method
 router.get('/getTest', async (req, res) => {
     try {
-        const data = await Sensor.find();
+        const data = await ModelEquipamento.find();
         res.json(data)
     }
     catch (error) {

@@ -19,9 +19,12 @@ const app = express();
 app.use(cors())
 app.use(express.json());
 
-const routes = require('./routes/database.js');
+const routesSensor = require('./routes/database.js');
+const routesEquipamento = require('./routes/databaseEquipamento.js');
 
-app.use('/api', routes)
+
+app.use('/api/sensor/', routesSensor);
+app.use('/api/equipamento/', routesEquipamento);
 app.use('/static', express.static(path.join(__dirname, 'www')))
 
 app.listen(3000, () => {
