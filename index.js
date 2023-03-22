@@ -21,10 +21,18 @@ app.use(express.json());
 
 const routesSensor = require('./routes/database.js');
 const routesEquipamento = require('./routes/databaseEquipamento.js');
-
+const routesCriticidade = require('./routes/databaseCriticidade.js');
+const routesSetor = require('./routes/databaseSetor.js');
+const routesStatus = require('./routes/databaseStatus.js');
 
 app.use('/api/sensor/', routesSensor);
 app.use('/api/equipamento/', routesEquipamento);
+app.use('/api/criticidade/', routesCriticidade);
+app.use('/api/setor/', routesSetor);
+app.use('/api/status/', routesStatus);
+
+
+
 app.use('/static', express.static(path.join(__dirname, 'www')))
 
 app.listen(3000, () => {
