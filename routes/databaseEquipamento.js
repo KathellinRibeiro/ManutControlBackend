@@ -1,6 +1,6 @@
 const express = require('express');
 const db = require("../models/equipamento");
-const ModelEquipamento = db.Mongoose.model('equipamento', db.EquipamentoSchema, 'equipamento');
+const Model = db.Mongoose.model('equipamento', db.EquipamentoSchema, 'equipamento');
 const router = express.Router();
 
 //Post Method
@@ -33,7 +33,7 @@ router.get('/getAll', async (req, res) => {
 //Get all Method
 router.get('/getTest', async (req, res) => {
     try {
-        const data = await ModelEquipamento.find();
+        const data = await Model.find();
         res.json(data)
     }
     catch (error) {

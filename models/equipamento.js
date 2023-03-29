@@ -2,6 +2,10 @@
 const mongoose = require('mongoose');
  
 const equipamentoSchema = new mongoose.Schema({
+    _id: {
+        required: false,
+        type: String
+    },
     Descricao: {
         required: true,
         type: String
