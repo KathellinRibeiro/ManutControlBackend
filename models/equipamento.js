@@ -1,6 +1,6 @@
 
 const mongoose = require('mongoose');
- 
+
 const equipamentoSchema = new mongoose.Schema({
     _id: {
         required: false,
@@ -18,20 +18,57 @@ const equipamentoSchema = new mongoose.Schema({
         required: true,
         type: String
     },
-    Status: {
-        required: true,
-        type: Number
-    },
-    Local: {
-        required: true,
-        type: Number
-    },
-    Criticidade: {
-        required: true,
-        type: Number
-    },
+    Status: [
+        {
+            Descricao: {
+                required: true,
+                type: String
+            },
+        }
+    ],
+    Local: [
+        {
+            _id: {
+                required: false,
+                type: String
+            },
+            Nome: {
+                required: true,
+                type: String
+            },
+        }
+    ],
+    Criticidade: [{
+        _id: {
+            required: true,
+            type: String
+        },
+        Descricao: {
+            required: true,
+            type: String
+        },
+    }],
+
+    Sensor: [{
+        _id: {
+            required: true,
+            type: String
+        },
+        Descricao: {
+            required: true,
+            type: String
+        },
+        metric_Inicial: {
+            required: true,
+            type: String
+        },
+        metric_Final: {
+            required: true,
+            type: String
+        },
+    }],
 }, { collection: 'equipamento' },
-{db:'manutcontroldb'}
+    { db: 'manutcontroldb' }
 );
- 
+
 module.exports = { Mongoose: mongoose, EquipamentoSchema: equipamentoSchema }
