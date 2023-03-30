@@ -23,6 +23,7 @@ router.post('/post', async (req, res) => {
 router.get('/getAll', async (req, res) => {
     try {
         const data = await Model.find();
+
         res.json(data)
     }
     catch (error) {
