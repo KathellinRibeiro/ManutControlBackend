@@ -1,7 +1,6 @@
 const express = require('express');
-const Model = require('../models/sensor');
 const db = require("../models/sensorDb");
-const Sensor = db.Mongoose.model('sensor', db.SensorSchema, 'sensor');
+const Model = db.Mongoose.model('sensor', db.SensorSchema, 'sensor');
 const router = express.Router();
 
 //Post Method
@@ -34,7 +33,7 @@ router.get('/getAll', async (req, res) => {
 //Get all Method
 router.get('/getTest', async (req, res) => {
     try {
-        const data = await Sensor.find();
+        const data = await Model.find();
         res.json(data)
     }
     catch (error) {
@@ -54,17 +53,20 @@ router.get('/getOne/:id', async (req, res) => {
 })
 
 //Update by ID Method
-router.patch('/update/:id', async (req, res) => {
+router.put('/update/:id', async (req, res) => {
     try {
         const id = req.params.id;
         const updatedData = req.body;
         const options = { new: true };
+  
+        console.log(id);
+        console.log(req.body);
+        const result = await Model.findOneAndUpdate(id, updatedData, options);
 
-        const result = await Model.findByIdAndUpdate(
-            id, updatedData, options
-        )
+        console.log(JSON.stringify(result));
 
-        res.send(result)
+        console.log(result);
+        res.send(JSON.stringify(result))
     }
     catch (error) {
         res.status(500).json({ message: error.message })

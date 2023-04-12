@@ -6,7 +6,11 @@ const dataSchema = new mongoose.Schema({
         required: true,
         type: String
     },
-    metric: {
+    metric_Final: {
+        required: true,
+        type: String
+    },
+    metric_Inicial: {
         required: true,
         type: String
     }

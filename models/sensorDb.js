@@ -2,15 +2,15 @@
 const mongoose = require('mongoose');
  
 const sensorSchema = new mongoose.Schema({
-    _id: {
-        required: true,
-        type: Number
-    },
     name: {
         required: true,
         type: String
     },
-    metric: {
+    metric_Final: {
+        required: true,
+        type: String
+    },
+    metric_Inicial: {
         required: true,
         type: String
     }

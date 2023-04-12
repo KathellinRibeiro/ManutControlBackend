@@ -2,12 +2,8 @@
 const mongoose = require('mongoose');
 
 const criticidadeSchema = new mongoose.Schema({
-    _id: {
+      Descricao: {
         required: false,
-        type: String
-    },
-    Descricao: {
-        required: true,
         type: String
     },
 }, { collection: 'criticidade' },

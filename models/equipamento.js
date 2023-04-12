@@ -20,6 +20,10 @@ const equipamentoSchema = new mongoose.Schema({
     },
     Status: [
         {
+            _id:{
+                required: true,
+                type: String
+            },
             Descricao: {
                 required: true,
                 type: String
@@ -32,7 +36,7 @@ const equipamentoSchema = new mongoose.Schema({
                 required: false,
                 type: String
             },
-            Nome: {
+            Descricao: {
                 required: true,
                 type: String
             },
