@@ -2,47 +2,20 @@
 const mongoose = require('mongoose');
 
 const equipamentoSchema = new mongoose.Schema({
-    _id: {
-        required: false,
-        type: String
-    },
     Descricao: {
         required: true,
         type: String
     },
     dataEntrada: {
-        required: true,
+        required: false,
         type: Date
     },
     Tag: {
         required: true,
         type: String
     },
-    Status: [
-        {
-            _id:{
-                required: true,
-                type: String
-            },
-            Descricao: {
-                required: true,
-                type: String
-            },
-        }
-    ],
-    Local: [
-        {
-            _id: {
-                required: false,
-                type: String
-            },
-            Descricao: {
-                required: true,
-                type: String
-            },
-        }
-    ],
-    Criticidade: [{
+    Status:
+    {
         _id: {
             required: true,
             type: String
@@ -51,9 +24,33 @@ const equipamentoSchema = new mongoose.Schema({
             required: true,
             type: String
         },
-    }],
+    }
+    ,
+    Local:
+    {
+        _id: {
+            required: true,
+            type: String
+        },
+        Descricao: {
+            required: true,
+            type: String
+        },
+    }
+    ,
+    Criticidade: {
+        _id: {
+            required: true,
+            type: String
+        },
+        Descricao: {
+            required: true,
+            type: String
+        },
+    },
 
-    Sensor: [{
+    Sensor:{
+
         _id: {
             required: true,
             type: String
@@ -70,7 +67,7 @@ const equipamentoSchema = new mongoose.Schema({
             required: true,
             type: String
         },
-    }],
+    },
 }, { collection: 'equipamento' },
     { db: 'manutcontroldb' }
 );

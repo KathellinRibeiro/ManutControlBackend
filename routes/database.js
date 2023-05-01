@@ -7,7 +7,8 @@ const router = express.Router();
 router.post('/post', async (req, res) => {
     const data = new Model({
         name: req.body.name,
-        metric: req.body.metric
+        metric_Inicial: req.body.metric_Inicial,        
+        metric_Final: req.body.metric_Final,
     })
 
     try {

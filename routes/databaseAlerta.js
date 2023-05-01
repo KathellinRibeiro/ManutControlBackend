@@ -1,12 +1,16 @@
 const express = require('express');
-const db = require("../models/equipamento");
-const Model = db.Mongoose.model('equipamento', db.EquipamentoSchema, 'equipamento');
+const db = require("../models/alerta");
+const Model = db.Mongoose.model('alerta', db.AlertaSchema, 'alerta');
 const router = express.Router();
+var dataFinal = new Array;
+
 
 //Post Method
 router.post('/post', async (req, res) => {
-    const data = new Model(req.body);
-    console.log(data);
+    const data = new Model({
+        name: req.body.name,
+        metric: req.body.metric
+    })
 
     try {
         const dataToSave = await data.save();
@@ -21,6 +25,7 @@ router.post('/post', async (req, res) => {
 router.get('/getAll', async (req, res) => {
     try {
         const data = await Model.find();
+
         res.json(data)
     }
     catch (error) {
@@ -29,10 +34,19 @@ router.get('/getAll', async (req, res) => {
 })
 
 //Get all Method
-router.get('/getTest', async (req, res) => {
+router.get('/getRegistros', async (req, res) => {
     try {
-        const data = await Model.find();
-        res.json(data)
+        const data = await Model.distinct('nameSensor');
+        data.map((item) => {
+            const carregarUltimosRegistos = async () => {
+                const dataSensor = [await Model.find({ "nameSensor": item }).limit(10)];
+               
+                dataFinal.push(...dataSensor);
+            }
+            carregarUltimosRegistos();
+        });
+        res.json(dataFinal);
+        dataFinal=[];
     }
     catch (error) {
         res.status(500).json({ message: error.message })
@@ -57,11 +71,14 @@ router.put('/update/:id', async (req, res) => {
         const updatedData = req.body;
         const options = { new: true };
 
-        const result = await Model.findOneAndUpdate(
-            id, updatedData, options
-        )
+        console.log(id);
+        console.log(req.body);
+        const result = await Model.findOneAndUpdate(id, updatedData, options);
 
-        res.send(result)
+        console.log(JSON.stringify(result));
+
+        console.log(result);
+        res.send(JSON.stringify(result))
     }
     catch (error) {
         res.status(500).json({ message: error.message })

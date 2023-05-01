@@ -6,8 +6,7 @@ const router = express.Router();
 //Post Method
 router.post('/post', async (req, res) => {
     const data = new Model({
-        name: req.body.name,
-        metric: req.body.metric
+        Nome: req.body.Nome
     })
 
     try {
