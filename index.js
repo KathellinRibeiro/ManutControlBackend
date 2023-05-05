@@ -26,6 +26,7 @@ const routesCriticidade = require('./routes/databaseCriticidade.js');
 const routesSetor = require('./routes/databaseSetor.js');
 const routesStatus = require('./routes/databaseStatus.js');
 const routesAlerta = require('./routes/databaseAlerta.js');
+const routesIndicadores = require('./routes/databaseIndicadores.js');
 
 app.use('/api/sensor/', routesSensor);
 app.use('/api/equipamento/', routesEquipamento);
@@ -33,7 +34,7 @@ app.use('/api/criticidade/', routesCriticidade);
 app.use('/api/setor/', routesSetor);
 app.use('/api/status/', routesStatus);
 app.use('/api/alerta/', routesAlerta);
-
+app.use('/api/indicadores/', routesIndicadores);
 
 
 
