@@ -87,12 +87,18 @@ router.get('/getIndicadorMtbf', async (req, res) => {
         let dia = moment().format("YYYY-MM-DD") + " " + timeTotal;
         timeTotalHora = moment(dia).format("HH");
         timeTotalMin = moment(dia).format("mm");
-        tempoDispo = ((parseInt(timeWorkDays) - ((parseInt(timeTotalMin) / 60) + parseInt(timeTotalHora))) / qtdParada).toFixed(2);
+        tempoDisponivel = ((parseInt(timeWorkDays) - ((parseInt(timeTotalMin) / 60) + parseInt(timeTotalHora))) / qtdParada).toFixed(2);
         console.log(timeTotalHora);
         console.log(timeTotalMin);
         console.log(timeWorkDays);
-        console.log(tempoDispo)
-        res.json(app);
+        console.log(tempoDisponivel)
+
+        const respostaFinal = [{
+            tempoUtil: timeWorkDays,
+            disponibilidade: tempoDisponivel
+        }];
+
+        res.json(respostaFinal);
     }
     catch (error) {
         res.status(500).json({ message: error.message })
