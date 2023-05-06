@@ -41,7 +41,7 @@ router.get('/getIndicadores', async (req, res) => {
         let mesAno = moment().format("YYYY-MM");
         let dataInicial = moment().format("YYYY-MM") + '-01';
         let dataBusca = dataInicial;
-        let dataMin;
+        let timeTotal="00:00";;   
         let dataMax;
         let dateFinal = moment().format("YYYY-MM-DD");
         // console.log(dataInicial);
@@ -51,36 +51,57 @@ router.get('/getIndicadores', async (req, res) => {
 
         const dataMes = await Model.find({ "time": new RegExp(mesAno + '.*') });
 
-        dataMes.map((itemData1) => {
-            if (dataBusca <= dateFinal) {
-                const newData = dataMes.filter(
-                    function (item) {
-                        if (item.time) {
-                            const itemData = item.time.toUpperCase();
-                            const textData = dataBusca.toUpperCase();
+        dataMinMax = [];
+        if (dataBusca <= dateFinal) {
+            const newData = dataMes.filter(
+                function (item) {
+                    if (item.time) {
+                        const itemData = item.time.toUpperCase();
+                        const textData = dataBusca.toUpperCase();
+                        return itemData.indexOf(textData) > -1;
+                    }
+                });
 
-                            return itemData.indexOf(textData) > -1;
-                        }
+            newData.map((item) => {
+                /// console.log(item.time)
+                let dataPush = moment(item.time, ["MM-DD-YYYY HH:mm", "YYYY-MM-DD HH:mm"]).isValid();;
+                //.format("YYYY-MM-DD HH:mm");
+                if (dataPush)
+                    dataMinMax.push(moment(item.time, ["YYYY-MM-DD HH:mm"]));
+            })
 
 
-                    });
+            dataBusca = moment(dataBusca).add(1, 'days').format("YYYY-MM-DD");
 
-                dataBusca = moment(dataBusca).add(1, 'days').format("YYYY-MM-DD");
+            var hora = moment.min(dataMinMax).format("HH")
+            var min = moment.min(dataMinMax).format("mm")
+            //.format("MM-DD-YYYY HH:mm");
+            console.log(min)
+            var max = moment.max(dataMinMax).format("YYYY-MM-DD HH:mm")
 
-                // console.log(dataBusca);
-            }
-            let dataPush = moment(itemData1.time, ["MM-DD-YYYY HH:mm", "YYYY-MM-DD HH:mm"]);;
-            //.format("YYYY-MM-DD HH:mm");
-            if (dataPush !== 'Invalid date')
-                dataMinMax.push(dataPush);
+            var subMin = moment.max(dataMinMax).subtract({ hours: hora, minutes: min }).format("mm");
+            var subHH = moment.max(dataMinMax).subtract({ hours: hora, minutes: min }).format("HH");
+            console.log(subMin)
+            console.log(subHH)
+            console.log(timeTotal)
+            timeTotal = timeTotal.add({ hours: subHH, minutes: subMin }).format("HH:mm");
+            //.format("MM-DD-YYYY HH:mm");
+           console.log(timeTotal)
 
-        });
-        
-        var min = moment.min(dataMinMax);
-        console.log(min)
-        var max = moment.max(dataMinMax);
-        console.log(max)
-        
+            // console.log(dataBusca);
+        }
+        /*   let dataPush = moment(itemData1.time, ["MM-DD-YYYY HH:mm", "YYYY-MM-DD HH:mm"]);;
+          //.format("YYYY-MM-DD HH:mm");
+          if (dataPush !== 'Invalid date')
+              dataMinMax.push(dataPush); */
+
+
+
+        /*      var min = moment.min(dataMinMax);
+             console.log(min)
+             var max = moment.max(dataMinMax);
+             console.log(max) */
+
         /// res.json(data)
 
         ///   console.log(dataMes);
