@@ -36,7 +36,7 @@ router.get('/getAll', async (req, res) => {
 })
 
 //Get all Method
-router.get('/getIndicadores', async (req, res) => {
+router.get('/getIndicadorMtbf', async (req, res) => {
     try {
         let mesAno = moment().format("YYYY-MM");
         let dataInicial = moment().format("YYYY-MM") + '-01';
@@ -44,11 +44,9 @@ router.get('/getIndicadores', async (req, res) => {
         let timeTotal = moment(dataInicial);
         let timeTotalMin = moment(dataInicial);
         let timeTotalHora = moment(dataInicial);
+        let qtdParada = 0;
 
-        let dataMax;
         let dateFinal = moment().format("YYYY-MM-DD");
-        // console.log(dataInicial);
-        //console.log(dateFinal);
 
         const resposta = await fetch('https://elekto.com.br/api/Calendars/br-BC/Delta?initialDate=' + dataInicial + '&finalDate=' + dateFinal + '&type=financial');
         const dataMes = await Model.find({ "time": new RegExp(mesAno + '.*') });
@@ -63,35 +61,37 @@ router.get('/getIndicadores', async (req, res) => {
                         return itemData.indexOf(textData) > -1;
                     }
                 });
+            if (newData.length > 0) {
+                qtdParada++;
 
-            newData.map((item) => {
-                /// console.log(item.time)
-                let dataPush = moment(item.time, ["MM-DD-YYYY HH:mm", "YYYY-MM-DD HH:mm"]).isValid();;
-                //.format("YYYY-MM-DD HH:mm");
-                if (dataPush)
-                    dataMinMax.push(moment(item.time, ["YYYY-MM-DD HH:mm"]));
-            })
+                newData.map((item) => {
+                    /// console.log(item.time)
+                    let dataPush = moment(item.time, ["MM-DD-YYYY HH:mm", "YYYY-MM-DD HH:mm"]).isValid();;
+                    //.format("YYYY-MM-DD HH:mm");
+                    if (dataPush)
+                        dataMinMax.push(moment(item.time, ["YYYY-MM-DD HH:mm"]));
+                });
 
+                dataBusca = moment(dataBusca).add(1, 'days').format("YYYY-MM-DD");
 
-            dataBusca = moment(dataBusca).add(1, 'days').format("YYYY-MM-DD");
-
-            var hora = moment.min(dataMinMax).format("HH")
-            var min = moment.min(dataMinMax).format("mm")
-            var max = moment.max(dataMinMax).format("YYYY-MM-DD HH:mm")
-
-            var subMin = moment.max(dataMinMax).subtract({ hours: hora, minutes: min }).format("mm");
-            var subHH = moment.max(dataMinMax).subtract({ hours: hora, minutes: min }).format("HH");
-            timeTotal = moment(timeTotal).add({ hours: subHH, minutes: subMin }).format("HH:mm");
-
+                var hora = moment.min(dataMinMax).format("HH")
+                var min = moment.min(dataMinMax).format("mm")
+                var subMin = moment.max(dataMinMax).subtract({ hours: hora, minutes: min }).format("mm");
+                var subHH = moment.max(dataMinMax).subtract({ hours: hora, minutes: min }).format("HH");
+                timeTotal = moment(timeTotal).add({ hours: subHH, minutes: subMin }).format("HH:mm");
+            }
         }
 
         const app = await resposta.json();
-        let timeWprkDays = app.WorkDays * 24
+        let timeWorkDays = parseInt(app.WorkDays) * 24
         let dia = moment().format("YYYY-MM-DD") + " " + timeTotal;
         timeTotalHora = moment(dia).format("HH");
         timeTotalMin = moment(dia).format("mm");
+        tempoDispo = ((parseInt(timeWorkDays) - ((parseInt(timeTotalMin) / 60) + parseInt(timeTotalHora))) / qtdParada).toFixed(2);
         console.log(timeTotalHora);
-        console.log(timeTotalMin)
+        console.log(timeTotalMin);
+        console.log(timeWorkDays);
+        console.log(tempoDispo)
         res.json(app);
     }
     catch (error) {
