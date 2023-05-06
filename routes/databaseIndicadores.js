@@ -42,6 +42,8 @@ router.get('/getIndicadores', async (req, res) => {
         let dataInicial = moment().format("YYYY-MM") + '-01';
         let dataBusca = dataInicial;
         let timeTotal = moment(dataInicial);
+        let timeTotalMin = moment(dataInicial);
+        let timeTotalHora = moment(dataInicial);
 
         let dataMax;
         let dateFinal = moment().format("YYYY-MM-DD");
@@ -80,29 +82,16 @@ router.get('/getIndicadores', async (req, res) => {
             var subMin = moment.max(dataMinMax).subtract({ hours: hora, minutes: min }).format("mm");
             var subHH = moment.max(dataMinMax).subtract({ hours: hora, minutes: min }).format("HH");
             timeTotal = moment(timeTotal).add({ hours: subHH, minutes: subMin }).format("HH:mm");
-            console.log(timeTotal)
+
         }
 
-
-        /*   let dataPush = moment(itemData1.time, ["MM-DD-YYYY HH:mm", "YYYY-MM-DD HH:mm"]);;
-          //.format("YYYY-MM-DD HH:mm");
-          if (dataPush !== 'Invalid date')
-              dataMinMax.push(dataPush); */
-
-
-
-        /*      var min = moment.min(dataMinMax);
-             console.log(min)
-             var max = moment.max(dataMinMax);
-             console.log(max) */
-
-        /// res.json(data)
-
-        ///   console.log(dataMes);
         const app = await resposta.json();
         let timeWprkDays = app.WorkDays * 24
-        moment().hours(timeTotal);
-        console.log(  moment().hours(timeTotal))
+        let dia = moment().format("YYYY-MM-DD") + " " + timeTotal;
+        timeTotalHora = moment(dia).format("HH");
+        timeTotalMin = moment(dia).format("mm");
+        console.log(timeTotalHora);
+        console.log(timeTotalMin)
         res.json(app);
     }
     catch (error) {
