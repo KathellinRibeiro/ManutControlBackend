@@ -41,14 +41,14 @@ router.get('/getIndicadores', async (req, res) => {
         let mesAno = moment().format("YYYY-MM");
         let dataInicial = moment().format("YYYY-MM") + '-01';
         let dataBusca = dataInicial;
-        let timeTotal="00:00";;   
+        let timeTotal = moment(dataInicial);
+
         let dataMax;
         let dateFinal = moment().format("YYYY-MM-DD");
         // console.log(dataInicial);
         //console.log(dateFinal);
 
         const resposta = await fetch('https://elekto.com.br/api/Calendars/br-BC/Delta?initialDate=' + dataInicial + '&finalDate=' + dateFinal + '&type=financial');
-
         const dataMes = await Model.find({ "time": new RegExp(mesAno + '.*') });
 
         dataMinMax = [];
@@ -75,21 +75,15 @@ router.get('/getIndicadores', async (req, res) => {
 
             var hora = moment.min(dataMinMax).format("HH")
             var min = moment.min(dataMinMax).format("mm")
-            //.format("MM-DD-YYYY HH:mm");
-            console.log(min)
             var max = moment.max(dataMinMax).format("YYYY-MM-DD HH:mm")
 
             var subMin = moment.max(dataMinMax).subtract({ hours: hora, minutes: min }).format("mm");
             var subHH = moment.max(dataMinMax).subtract({ hours: hora, minutes: min }).format("HH");
-            console.log(subMin)
-            console.log(subHH)
+            timeTotal = moment(timeTotal).add({ hours: subHH, minutes: subMin }).format("HH:mm");
             console.log(timeTotal)
-            timeTotal = timeTotal.add({ hours: subHH, minutes: subMin }).format("HH:mm");
-            //.format("MM-DD-YYYY HH:mm");
-           console.log(timeTotal)
-
-            // console.log(dataBusca);
         }
+
+
         /*   let dataPush = moment(itemData1.time, ["MM-DD-YYYY HH:mm", "YYYY-MM-DD HH:mm"]);;
           //.format("YYYY-MM-DD HH:mm");
           if (dataPush !== 'Invalid date')
@@ -106,6 +100,9 @@ router.get('/getIndicadores', async (req, res) => {
 
         ///   console.log(dataMes);
         const app = await resposta.json();
+        let timeWprkDays = app.WorkDays * 24
+        moment().hours(timeTotal);
+        console.log(  moment().hours(timeTotal))
         res.json(app);
     }
     catch (error) {
