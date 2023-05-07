@@ -3,6 +3,7 @@ const db = require("../models/alerta");
 const Model = db.Mongoose.model('alerta', db.AlertaSchema, 'alerta');
 const router = express.Router();
 const moment = require("moment");
+const { Int32 } = require('mongodb');
 var dataFinal = new Array;
 var dataMinMax = new Array;
 
@@ -65,9 +66,7 @@ router.get('/getIndicadorMtbf', async (req, res) => {
                 qtdParada++;
 
                 newData.map((item) => {
-                    /// console.log(item.time)
                     let dataPush = moment(item.time, ["MM-DD-YYYY HH:mm", "YYYY-MM-DD HH:mm"]).isValid();;
-                    //.format("YYYY-MM-DD HH:mm");
                     if (dataPush)
                         dataMinMax.push(moment(item.time, ["YYYY-MM-DD HH:mm"]));
                 });
@@ -87,11 +86,14 @@ router.get('/getIndicadorMtbf', async (req, res) => {
         let dia = moment().format("YYYY-MM-DD") + " " + timeTotal;
         timeTotalHora = moment(dia).format("HH");
         timeTotalMin = moment(dia).format("mm");
-        tempoDisponivel = ((parseInt(timeWorkDays) - ((parseInt(timeTotalMin) / 60) + parseInt(timeTotalHora))) / qtdParada).toFixed(2);
-    
+        tempoDisponivel = ((timeWorkDays - ((parseInt(timeTotalMin) / 60) + parseInt(timeTotalHora))) / qtdParada).toFixed(2);
+        porcentagemDisponibilidade = parseFloat(tempoDisponivel / timeWorkDays).toFixed(4)
         const respostaFinal = [{
             tempoUtil: timeWorkDays,
-            disponibilidade: tempoDisponivel
+            disponibilidade: tempoDisponivel * 1,
+            porcentagemDisponibilidade: porcentagemDisponibilidade * 1,
+            mes: moment().format("MM/YYYY"),
+            quantidadeQuebra: qtdParada
         }];
 
         res.json(respostaFinal);
