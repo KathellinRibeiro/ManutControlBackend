@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "create-env": "printenv > .env"
+    "create-env": "printenv > .env",
+    "swagger-autogen": "node swagger.js"
   },
   "repository": {
     "type": "git",
@@ -19,6 +20,7 @@
   },
   "homepage": "https://github.com/figueirapedro/ManutControlBackend#readme",
   "dependencies": {
+    "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
@@ -26,7 +28,9 @@
     "mongodb": "^5.1.0",
     "mongoose": "^7.0.0",
     "node-fetch": "^3.3.1",
-    "nodemon": "^2.0.20"
+    "nodemon": "^2.0.20",
+    "swagger-autogen": "^2.23.1",
+    "swagger-ui-express": "^4.6.3"
   },
   "engines": {
     "node": "16.x.x"

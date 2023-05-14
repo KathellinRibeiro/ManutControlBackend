@@ -56,16 +56,11 @@ router.put('/update/:id', async (req, res) => {
     try {
         const id = req.params.id;
         const updatedData = req.body;
-        const options = { new: true };
-
-      
+        const options = { new: true };      
         console.log(id);
         console.log(req.body);
-        const result = await Model.findOneAndUpdate(id, updatedData, options);
+        const result = await Model.findByIdAndUpdate(id, updatedData, options);
 
-        console.log(JSON.stringify(result));
-
-        console.log(result);
         res.send(JSON.stringify(result))
     }
     catch (error) {

@@ -57,7 +57,7 @@ router.put('/update/:id', async (req, res) => {
         const updatedData = req.body;
         const options = { new: true };
 
-        const result = await Model.findOneAndUpdate(
+        const result = await Model.findByIdAndUpdate(
             id, updatedData, options
         )
 

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
  
-const alertaSchema = new mongoose.Schema({
+const datasSchema = new mongoose.Schema({
     time: {
         required: true,
         type: String
@@ -9,13 +9,13 @@ const alertaSchema = new mongoose.Schema({
         required: true,
         type: String
     },
-    nameSensor: {
+    name: {
         required: true,
         type: String    }
 
-}, { collection: 'alerta' },
+}, { collection: 'datas' },
 {db:'manutcontroldb'}
 );
  
-module.exports = { Mongoose: mongoose, AlertaSchema: alertaSchema }
+module.exports = { Mongoose: mongoose, DatasSchema: datasSchema }
 

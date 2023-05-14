@@ -54,18 +54,11 @@ router.get('/getOne/:id', async (req, res) => {
 //Update by ID Method
 router.put('/update/:id', async (req, res) => {
     try {
-        const id = req.params.id;
+        const id = req.params.id.toString();
         const updatedData = req.body;
         const options = { new: true };
-
-      
-        console.log(id);
-        console.log(req.body);
-        const result = await Model.findOneAndUpdate(id, updatedData, options);
-
-        console.log(JSON.stringify(result));
-
-        console.log(result);
+        const result = await Model.findByIdAndUpdate(id, updatedData, options);
+        console.log(result)
         res.send(JSON.stringify(result))
     }
     catch (error) {

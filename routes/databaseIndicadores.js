@@ -1,6 +1,8 @@
 const express = require('express');
-const db = require("../models/alerta");
-const Model = db.Mongoose.model('alerta', db.AlertaSchema, 'alerta');
+const db = require("../models/datas");
+const dbSensor = require("../models/sensorDb");
+const ModelSensor = db.Mongoose.model('sensor', dbSensor.SensorSchema, 'sensor');
+const Model = db.Mongoose.model('datas', db.DatasSchema, 'datas');
 const router = express.Router();
 const moment = require("moment");
 const { Int32 } = require('mongodb');
@@ -37,61 +39,82 @@ router.get('/getAll', async (req, res) => {
 })
 
 //Get all Method
-router.get('/getIndicadorMtbf', async (req, res) => {
+router.get('/getIndicadorMtbf/:time', async (req, res) => {
     try {
+        const timeDisp = req.params.time;
         let mesAno = moment().format("YYYY-MM");
         let dataInicial = moment().format("YYYY-MM") + '-01';
-        let dataBusca = dataInicial;
-        let timeTotal = moment(dataInicial);
+        var dataBusca = moment().format("YYYY-MM") + '-01';
+        let timeTotal = dataInicial;
+
+        let horaTotal = 0;
+        let minutoTotal = 0
         let timeTotalMin = moment(dataInicial);
         let timeTotalHora = moment(dataInicial);
         let qtdParada = 0;
 
         let dateFinal = moment().format("YYYY-MM-DD");
-
-        const resposta = await fetch('https://elekto.com.br/api/Calendars/br-BC/Delta?initialDate=' + dataInicial + '&finalDate=' + dateFinal + '&type=financial');
+        const sensor = await ModelSensor.find();
+        const resposta = await fetch("https://elekto.com.br/api/Calendars/br-BC/Delta?initialDate=" + dataInicial + "&finalDate=" + dateFinal + "&type=financial", { mode: "cors" })
+            .then(response => response.json())
         const dataMes = await Model.find({ "time": new RegExp(mesAno + '.*') });
+        for (var i = 0; i <= resposta.ActualDays; i++) {
+            dataMinMax = []; 9
+            if (dataBusca <= dateFinal) {
+                const newData = dataMes.filter(
+                    function (item) {
+                        if (item.time) {
+                            const itemData = item.time.toUpperCase();
+                            const textData = dataBusca.toUpperCase();
+                            return itemData.indexOf(textData) > -1;
+                        }
+                    });
+                const newDataOficial = newData.filter(
+                    function (item1) {
+                        if (item1.name) {
+                            const itemData = item1.time.toUpperCase();
+                            const textData = dataBusca.toUpperCase();
+                            const index = itemData.indexOf(textData)
+                            const filteredNames = sensor.filter(
+                                sensores => sensores.name.includes(item1.name));
+                            if (filteredNames.length > 0) {
+                                let metricInicial = parseFloat(filteredNames[0].metric_Inicial);
+                                let metricFinal = parseFloat(filteredNames.metric_Final);
+                                if (index > -1) {
+                                    if (parseFloat(item1.metric) < metricInicial || parseFloat(item1.metric) > metricFinal)
+                                        return -1;
+                                }
+                                else
+                                    return index > -1
+                            }
+                        }
+                    });
+                if (newDataOficial.length > 0)
+                    qtdParada++;
 
-        dataMinMax = [];
-        if (dataBusca <= dateFinal) {
-            const newData = dataMes.filter(
-                function (item) {
-                    if (item.time) {
-                        const itemData = item.time.toUpperCase();
-                        const textData = dataBusca.toUpperCase();
-                        return itemData.indexOf(textData) > -1;
-                    }
-                });
-            if (newData.length > 0) {
-                qtdParada++;
 
-                newData.map((item) => {
+                newDataOficial.map((item) => {
                     let dataPush = moment(item.time, ["MM-DD-YYYY HH:mm", "YYYY-MM-DD HH:mm"]).isValid();;
                     if (dataPush)
                         dataMinMax.push(moment(item.time, ["YYYY-MM-DD HH:mm"]));
                 });
-
                 dataBusca = moment(dataBusca).add(1, 'days').format("YYYY-MM-DD");
-
                 var hora = moment.min(dataMinMax).format("HH")
                 var min = moment.min(dataMinMax).format("mm")
                 var subMin = moment.max(dataMinMax).subtract({ hours: hora, minutes: min }).format("mm");
                 var subHH = moment.max(dataMinMax).subtract({ hours: hora, minutes: min }).format("HH");
-                timeTotal = moment(timeTotal).add({ hours: subHH, minutes: subMin }).format("HH:mm");
+                horaTotal = horaTotal + parseInt(subHH);
+                minutoTotal = minutoTotal + parseInt(subMin);
             }
         }
 
-        const app = await resposta.json();
-        let timeWorkDays = parseInt(app.WorkDays) * 24
-        let dia = moment().format("YYYY-MM-DD") + " " + timeTotal;
-        timeTotalHora = moment(dia).format("HH");
-        timeTotalMin = moment(dia).format("mm");
-        tempoDisponivel = ((timeWorkDays - ((parseInt(timeTotalMin) / 60) + parseInt(timeTotalHora))) / qtdParada).toFixed(2);
-        porcentagemDisponibilidade = parseFloat(tempoDisponivel / timeWorkDays).toFixed(4)
+        let timeActualDays = parseInt(resposta.ActualDays) * timeDisp
+        tempoDisponivel = ((timeActualDays - ((parseInt(minutoTotal) / 60) + parseInt(horaTotal))) / qtdParada).toFixed(2);
+        porcentagemDisponibilidade = parseFloat(tempoDisponivel / timeActualDays).toFixed(4)
         const respostaFinal = [{
-            tempoUtil: timeWorkDays,
-            disponibilidade: tempoDisponivel * 1,
-            porcentagemDisponibilidade: porcentagemDisponibilidade * 1,
+            tempoUtil: timeActualDays,
+            disponibilidade: qtdParada === 0 ? timeActualDays : tempoDisponivel * 1,
+            porcentagemDisponibilidade: qtdParada === 0 ? 0.1000 : porcentagemDisponibilidade * 1,
             mes: moment().format("MM/YYYY"),
             quantidadeQuebra: qtdParada
         }];
@@ -106,10 +129,10 @@ router.get('/getIndicadorMtbf', async (req, res) => {
 //Get all Method
 router.get('/getRegistros', async (req, res) => {
     try {
-        const data = await Model.distinct('nameSensor');
+        const data = await Model.distinct('name');
         data.map((item) => {
             const carregarUltimosRegistos = async () => {
-                const dataSensor = [await Model.find({ "nameSensor": item }).limit(10)];
+                const dataSensor = [await Model.find({ "name": item }).limit(10)];
 
                 dataFinal.push(...dataSensor);
             }

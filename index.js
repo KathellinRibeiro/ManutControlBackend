@@ -4,6 +4,10 @@ const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
 const mongoString = process.env.DATABASE_URL;
+const bodyParser = require('body-parser');
+const swaggerUi = require('swagger-ui-express');
+
+const swaggerFile = require('./swagger_output.json');
 
 
 mongoose.connect(mongoString);
@@ -18,7 +22,10 @@ database.once('connected', () => {
 })
 const app = express();
 app.use(cors())
+
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
 const routesSensor = require('./routes/database.js');
 const routesEquipamento = require('./routes/databaseEquipamento.js');
