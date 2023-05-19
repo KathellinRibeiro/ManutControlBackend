@@ -49,6 +49,6 @@ app.use('/api/usuario/', routesUsuario);
 
 app.use('/static', express.static(path.join(__dirname, 'www')))
 
-app.listen(3000, () => {
-    console.log(`Server Started at ${3000}`)
+app.listen(3003, () => {
+    console.log(`Server Started at ${3003}`)
 })

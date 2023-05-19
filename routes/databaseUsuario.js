@@ -45,7 +45,7 @@ router.post('/post', async (req, res) => {
     })
     const emailExiste = await Model.find({ "Email": req.body.Email });
     console.log(emailExiste)
-    if (emailExiste) {
+    if (emailExiste.length>0) {
         res.json(false)
     }
 
@@ -137,10 +137,12 @@ router.put('/update/:id', async (req, res) => {
 })
 
 //Delete by ID Method
-router.delete('/delete/:id', async (req, res) => {
+router.delete('/delete/:email', async (req, res) => {
     try {
-        const id = req.params.id;
-        const data = await Model.findByIdAndDelete(id)
+        const email = req.params.email;
+        console.log(email)
+        const data = await Model.findOneAndDelete({Email:email})
+        
         res.send(`Document with ${data.name} has been deleted..`)
     }
     catch (error) {

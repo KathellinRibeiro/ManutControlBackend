@@ -41,7 +41,7 @@ router.get('/getAll', async (req, res) => {
 router.get('/getAllMes', async (req, res) => {
     try {
         let mesAno = moment().format("YYYY-MM");
-        const data = await Model.find({ "time": new RegExp(mesAno + '.*') }).sort({ field: 'asc', time: -1 }).limit(1000);
+        const data = await Model.find({ "time": new RegExp(mesAno + '.*') }).sort({ field: 'asc', time: -1 }).limit(200);
         res.json(data)
     }
     catch (error) {
