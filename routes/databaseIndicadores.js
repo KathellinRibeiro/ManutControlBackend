@@ -39,9 +39,11 @@ router.get('/getAll', async (req, res) => {
 })
 
 //Get all Method
-router.get('/getIndicadorMtbf/:time', async (req, res) => {
+router.get('/getIndicadorMtbf/:time?/:date?', async (req, res) => {
     try {
-        const timeDisp = req.params.time;
+        const timeDisp = parseInt(req.params.time) < 1 || req.params.time ===undefined ? 8 : parseInt(req.params.time);
+        const timeDispDate = parseInt(req.params.date) < 1 || req.params.date ===undefined  ? 0 : parseInt(req.params.date);
+
         let mesAno = moment().format("YYYY-MM");
         let dataInicial = moment().format("YYYY-MM") + '-01';
         var dataBusca = moment().format("YYYY-MM") + '-01';
@@ -57,8 +59,9 @@ router.get('/getIndicadorMtbf/:time', async (req, res) => {
         const sensor = await ModelSensor.find();
         const resposta = await fetch("https://elekto.com.br/api/Calendars/br-BC/Delta?initialDate=" + dataInicial + "&finalDate=" + dateFinal + "&type=financial", { mode: "cors" })
             .then(response => response.json())
+
         const dataMes = await Model.find({ "time": new RegExp(mesAno + '.*') });
-        for (var i = 0; i <= resposta.ActualDays; i++) {
+        for (var i = 0; i <= resposta.WorkDays; i++) {
             dataMinMax = []; 9
             if (dataBusca <= dateFinal) {
                 const newData = dataMes.filter(
@@ -107,8 +110,7 @@ router.get('/getIndicadorMtbf/:time', async (req, res) => {
                 minutoTotal = minutoTotal + parseInt(subMin);
             }
         }
-
-        let timeActualDays = parseInt(resposta.ActualDays) * timeDisp
+        let timeActualDays = parseInt(timeDispDate) > 0 ? parseInt(timeDispDate) * timeDisp : parseInt(resposta.WorkDays) * timeDisp
         tempoDisponivel = ((timeActualDays - ((parseInt(minutoTotal) / 60) + parseInt(horaTotal))) / qtdParada).toFixed(2);
         porcentagemDisponibilidade = parseFloat(tempoDisponivel / timeActualDays).toFixed(4)
         const respostaFinal = [{
